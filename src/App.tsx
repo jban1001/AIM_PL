@@ -10,6 +10,7 @@ import { DrivingRestrictionPanel } from "./components/DrivingRestrictionPanel";
 import { Composer } from "./components/Composer";
 import { VoiceReport } from "./components/VoiceReport";
 import { VehicleFrame } from "./components/VehicleFrame";
+import { SimulationWorkspace } from "./components/SimulationWorkspace";
 import { Icon } from "./components/Icon";
 import {
   communities,
@@ -431,31 +432,11 @@ function RoadtownPrototype({ onReset }: { onReset: () => void }) {
             </div>
           </div>
           <div className="notification-demo-actions">
-            {notificationScenarios.map((item) => (
-              <button
-                key={item.id}
-                className="receive-scenario-button"
-                disabled={offline}
-                onClick={() => receiveScenario(item.id)}
-              >
-                <Icon name="spark" size={17} />
-                {item.name}
-              </button>
-            ))}
             <button className="reset-demo-button" onClick={onReset}>
               <Icon name="refresh" size={16} />
               시연 초기화
             </button>
           </div>
-          <button
-            className="speech-trigger"
-            disabled={!driving || busy}
-            onClick={() => flow.begin("voice", selected, scenario)}
-          >
-            <Icon name="mic" size={19} />
-            ‘제보할게’ 발화 시연
-            <Icon name="arrow" size={16} />
-          </button>
           <button
             className="settings-toggle"
             onClick={() => setDemoOpen((value) => !value)}
@@ -465,6 +446,15 @@ function RoadtownPrototype({ onReset }: { onReset: () => void }) {
             <Icon name="down" size={15} />
           </button>
         </div>
+        <SimulationWorkspace
+          scenarioId={scenarioId}
+          disabled={!!session}
+          canReport={driving && !busy && !offline}
+          canReceive={!offline && !session}
+          onSelect={changeScenario}
+          onReport={() => flow.begin("voice", selected, scenario)}
+          onReceive={receiveScenario}
+        />
         {demoOpen && (
           <div className="console-details">
             <div className="notification-event-trace">
