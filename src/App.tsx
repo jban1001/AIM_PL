@@ -28,7 +28,6 @@ import {
   makeIncoming,
   nextPagePosts,
   pagePosts,
-  scenarioIncoming,
   wait,
   type ReportAIInput,
 } from "./services/mockCommunity";
@@ -45,9 +44,19 @@ type Feed = { all: Post[]; visible: Post[]; pending: Post[]; scroll: number };
 type CommunityPostData = Record<CommunityId, Feed>;
 const ids: CommunityId[] = ["nearby", "direction", "destination"];
 const communityName = (id: CommunityId) => communities.find((item) => item.id === id)!.name;
-function initialFeeds(scenario = scenarios[0]) {
+// Board content is independent of the selected report simulation.
+const boardExamples = scenarios.flatMap((scenario) => scenario.examples);
+const boardSeeds = Object.fromEntries(
+  ids.map((id, index) => [id, {
+    ...scenarios[0],
+    id: `board-${id}`,
+    examples: [...boardExamples.slice(index), ...boardExamples.slice(0, index)],
+  }]),
+) as Record<CommunityId, (typeof scenarios)[number]>;
+function initialFeeds() {
   return Object.fromEntries(
     ids.map((id) => {
+      const scenario = boardSeeds[id];
       const all = createPosts(scenario, id);
       return [
         id,
@@ -56,7 +65,7 @@ function initialFeeds(scenario = scenarios[0]) {
           visible: pagePosts(all, 0),
           pending:
             id === "nearby"
-              ? makeIncoming(scenario, id, scenario.simulation?.initialPendingCount ?? 2)
+              ? makeIncoming(scenario, id, 2)
               : [],
           scroll: 0,
         },
@@ -90,7 +99,6 @@ function RoadtownPrototype({ onReset }: { onReset: () => void }) {
   const [calls, setCalls] = useState(0);
   const [lastInput, setLastInput] = useState<ReportAIInput | null>(null);
   const [clock, setClock] = useState(new Date());
-  const generation = useRef(0);
   const moreBusy = useRef(false);
   const online = useRef(!offline);
   online.current = !offline;
@@ -181,7 +189,7 @@ function RoadtownPrototype({ onReset }: { onReset: () => void }) {
           [selected]: {
             ...prev[selected],
             pending: [
-              ...scenarioIncoming(scenario, selected, prev[selected].all),
+              ...makeIncoming(boardSeeds[selected], selected, 1),
               ...prev[selected].pending,
             ].slice(0, 8),
           },
@@ -189,7 +197,7 @@ function RoadtownPrototype({ onReset }: { onReset: () => void }) {
       mockConfig.refreshMs,
     );
     return () => clearInterval(id);
-  }, [selected, offline, scenario]);
+  }, [selected, offline]);
   useEffect(() => {
     if (offline) {
       setLoading(false);
@@ -198,16 +206,15 @@ function RoadtownPrototype({ onReset }: { onReset: () => void }) {
     setLoading(true);
     const id = setTimeout(() => setLoading(false), mockConfig.delayMs);
     return () => clearTimeout(id);
-  }, [selected, offline, scenarioId]);
+  }, [selected, offline]);
   async function loadMore() {
     if (moreBusy.current || offline || loading || viewState !== "normal" || blocked) return;
     const target = selected;
     if (!nextPagePosts(feeds[target].all, feeds[target].visible).length) return;
-    const version = generation.current;
     moreBusy.current = true;
     setLoadingMore(true);
     await wait(mockConfig.delayMs);
-    if (version === generation.current && online.current)
+    if (online.current)
       updateFeed(target, (current) => ({
         ...current,
         visible: [...current.visible, ...nextPagePosts(current.all, current.visible)],
@@ -237,17 +244,8 @@ function RoadtownPrototype({ onReset }: { onReset: () => void }) {
   }
   function changeScenario(id: string) {
     if (session) return;
-    generation.current += 1;
     setScenarioId(id);
     const next = scenarios.find((item) => item.id === id)!;
-    const nextFeeds = initialFeeds(next);
-    for (const id of ids)
-      for (const item of delivery.history[id]) {
-        nextFeeds[id].all = upsertReceivedPost(nextFeeds[id].all, item.post);
-        nextFeeds[id].visible = upsertReceivedPost(nextFeeds[id].visible, item.post);
-      }
-    setFeeds(nextFeeds);
-    setViewState(next.simulation?.initialView ?? "normal");
     setFailAI(next.simulation?.failFirstReport ?? false);
   }
   return (
@@ -285,10 +283,19 @@ function RoadtownPrototype({ onReset }: { onReset: () => void }) {
                     : "같은 길을 지나는 운전자들의 제보를 확인하세요."}
                 </p>
               </div>
-              <span className="live-badge">
-                <span className={`status-dot ${offline ? "muted" : ""}`} />
-                {offline ? "연결 끊김" : "커뮤니티 연결됨"}
-              </span>
+              <div className="voice-guidance-control">
+                <span>음성 안내 <strong>{tts ? "ON" : "OFF"}</strong></span>
+                <button
+                  type="button"
+                  role="switch"
+                  aria-label="음성 안내"
+                  aria-checked={tts}
+                  className={`toggle ${tts ? "on" : ""}`}
+                  onClick={() => setTts((value) => !value)}
+                >
+                  <span />
+                </button>
+              </div>
             </div>
             <CommunityTabs selected={selected} onChange={setSelected} />
             <div className="community-description">
@@ -378,8 +385,6 @@ function RoadtownPrototype({ onReset }: { onReset: () => void }) {
                     notification={notification}
                     playback={delivery.stateFor(notification?.post.id ?? "")}
                     enabled={tts}
-                    onToggle={() => setTts((value) => !value)}
-                    offline={offline}
                     onPlay={() => {
                       if (notification) delivery.playManual(notification);
                     }}
@@ -449,7 +454,7 @@ function RoadtownPrototype({ onReset }: { onReset: () => void }) {
         <SimulationWorkspace
           scenarioId={scenarioId}
           disabled={!!session}
-          canReport={driving && !busy && !offline}
+          canReport={!busy && !offline}
           canReceive={!offline && !session}
           onSelect={changeScenario}
           onReport={() => flow.begin("voice", selected, scenario)}
@@ -567,7 +572,7 @@ function RoadtownPrototype({ onReset }: { onReset: () => void }) {
                 onClick={() =>
                   updateFeed(selected, (current) => ({
                     ...current,
-                    pending: [...makeIncoming(scenario, selected, 2), ...current.pending],
+                    pending: [...makeIncoming(boardSeeds[selected], selected, 2), ...current.pending],
                   }))
                 }
               >

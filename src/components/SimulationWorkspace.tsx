@@ -45,7 +45,7 @@ export function SimulationWorkspace({ scenarioId, disabled, canReport, canReceiv
             <button type="button" className="speech-trigger" disabled={!canReport} onClick={onReport}>
               <Icon name="mic" size={19} />‘제보할게’ 발화 시연<Icon name="arrow" size={16} />
             </button>
-            <small>주행 제한 ON 상태에서 실행할 수 있습니다.</small>
+            <small>주행 제한 ON/OFF 모두 음성 제보를 실행할 수 있습니다.</small>
           </div>
           <div className="simulation-step">
             <span className="simulation-step-label">02 · 수신자</span>

@@ -1,5 +1,4 @@
 import type { MockNotificationData, TTSPlaybackState } from "../domain/notifications";
-import { ContextPanel } from "./ContextPanel";
 import { Icon } from "./Icon";
 import { VoiceNotificationCard } from "./VoiceNotificationCard";
 
@@ -8,17 +7,13 @@ export function DrivingRestrictionPanel({
   notification,
   playback,
   enabled,
-  onToggle,
   onPlay,
-  offline,
 }: {
   communityName: string;
   notification?: MockNotificationData;
   playback: TTSPlaybackState;
   enabled: boolean;
-  onToggle: () => void;
   onPlay: () => void;
-  offline: boolean;
 }) {
   return (
     <section
@@ -67,20 +62,7 @@ export function DrivingRestrictionPanel({
           <span className="voice-command-label">음성으로 제보하기</span>
           <strong>“제보할게”라고 말해보세요</strong>
         </div>
-        <details className="reading-settings">
-          <summary>
-            <Icon name="speaker" size={14} />
-            음성 안내 설정 · {enabled ? "ON" : "OFF"}
-            <Icon name="down" size={13} />
-          </summary>
-          <ContextPanel
-            enabled={enabled}
-            onToggle={onToggle}
-            communityName={communityName}
-            posts={notification ? [notification.post] : []}
-            offline={offline}
-          />
-        </details>
+
       </div>
       <div className="policy-note">
         <Icon name="shield" size={15} />
