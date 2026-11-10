@@ -140,6 +140,7 @@
   background: #fff;
 }
 .wordmark {
+  color: #8654c7;
   font-size: 22px;
   letter-spacing: -0.8px;
   font-weight: 900;
@@ -147,7 +148,7 @@
   align-items: center;
 }
 .wordmark > span {
-  color: #8654c7;
+  color: inherit;
 }
 .wordmark i {
   background: #b99cdd;

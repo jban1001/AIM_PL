@@ -253,8 +253,8 @@ function RoadtownPrototype({ onReset }: { onReset: () => void }) {
     <div className="prototype-page">
       <header className="prototype-heading">
         <div>
-          <span className="eyebrow">ROADTOWN · INTERACTIVE PROTOTYPE</span>
-          <h1>안전하게 전하는, 길 위의 소식.</h1>
+          <span className="eyebrow">GAZEE · INTERACTIVE PROTOTYPE</span>
+          <h1>어디가지? 여기가지!</h1>
           <p>직접 쓰거나 말로 전하고, 같은 길을 가는 사람들과 연결하세요.</p>
         </div>
         <span className="environment-badge">
@@ -393,7 +393,7 @@ function RoadtownPrototype({ onReset }: { onReset: () => void }) {
                 이용자 제보는 검증된 사실이 아닙니다.
               </span>
               <span>
-                ROADTOWN <i />
+                GAZEE <i />
                 COMMUNITY
               </span>
             </footer>

@@ -4,7 +4,7 @@ import type { ScenarioEventHandler } from "../../domain/notifications.ts";
 // This fixture contains no sensor, location, backend, or Pleos SDK integration.
 export const BlackIceScenario: ScenarioEventHandler = {
   id: "black-ice-approach",
-  name: "블랙아이스 제보 수신 시뮬레이션",
+  name: "도로 위험 시뮬레이션",
   createEvent: (community, now = Date.now()) => ({
     post: {
       id: "mock-front-car-seongsu-black-ice",

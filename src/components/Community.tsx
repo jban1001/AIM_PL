@@ -23,7 +23,7 @@ export function AppLayout({
       <div className="app-body">
         <header className="topbar">
           <div className="wordmark">
-            ROAD<span>TOWN</span>
+            GA<span>ZEE</span>
             <i />
           </div>
           <span className="topbar-subtitle">우리의 길을 잇는 커뮤니티</span>
