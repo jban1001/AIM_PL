@@ -48,12 +48,12 @@ export function DrivingRestrictionPanel({
           <div className="notification-empty-icon">
             <Icon name="speaker" size={30} />
           </div>
-          <span className="eyebrow">LISTEN TO THE ROAD</span>
-          <h2>아직 전달받은 제보가 없어요</h2>
+          <span className="eyebrow">음성 안내 준비됨</span>
+          <h2>새로운 제보를 기다리고 있어요</h2>
           <p>
-            가까운 곳의 중요한 제보가 도착하면
+            주변 도로의 새로운 소식을
             <br />
-            음성과 메시지 카드로 알려드릴게요.
+            화면과 음성으로 안내해 드립니다.
           </p>
           <span className="notification-waiting">
             <span className="status-dot" />
@@ -64,7 +64,8 @@ export function DrivingRestrictionPanel({
       <div className="driving-panel-bottom">
         <div className="voice-command-reminder">
           <Icon name="mic" size={16} />
-          제보할 때는 “제보할게”<span>화면 바깥 발화 시연 버튼 사용</span>
+          <span className="voice-command-label">음성으로 제보하기</span>
+          <strong>“제보할게”라고 말해보세요</strong>
         </div>
         <details className="reading-settings">
           <summary>

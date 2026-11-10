@@ -24,9 +24,8 @@ export function AppLayout({
         <header className="topbar">
           <div className="wordmark">
             GA<span>ZEE</span>
-            <i />
           </div>
-          <span className="topbar-subtitle">우리의 길을 잇는 커뮤니티</span>
+          <span className="topbar-subtitle">도로 위의 커뮤니티</span>
           <div className="vehicle-status">
             <span className={`status-dot ${vehicleState === "driving" ? "amber" : ""}`} />
             <Icon name="car" size={19} />
@@ -129,7 +128,7 @@ export function PostCard({
         <div className="post-evidence">
           <Icon name="spark" size={15} />
           <p>
-            <span>Mock 근거</span>
+            <span>제보 근거</span>
             {post.evidence}
           </p>
         </div>

@@ -253,13 +253,13 @@ function RoadtownPrototype({ onReset }: { onReset: () => void }) {
     <div className="prototype-page">
       <header className="prototype-heading">
         <div>
-          <span className="eyebrow">GAZEE · INTERACTIVE PROTOTYPE</span>
+          <span className="eyebrow">GAZEE / LOCAL PREVIEW</span>
           <h1>어디가지? 여기가지!</h1>
-          <p>직접 쓰거나 말로 전하고, 같은 길을 가는 사람들과 연결하세요.</p>
+          <p>차량 커뮤니티 · 개발 미리보기</p>
         </div>
         <span className="environment-badge">
           <span className="status-dot" />
-          MOCK ENVIRONMENT
+          시뮬레이션 모드
         </span>
       </header>
       <VehicleFrame>
@@ -275,13 +275,13 @@ function RoadtownPrototype({ onReset }: { onReset: () => void }) {
             <div className="page-heading">
               <div>
                 <span className="eyebrow">
-                  {driving ? "DRIVING SAFETY · MOCK" : "CONNECTED ON THE ROAD"}
+                  {driving ? "주행 모드" : "커뮤니티"}
                 </span>
-                <h1>{driving ? "주행 중 이용이 제한돼요" : "커뮤니티 제보를 확인해 보세요."}</h1>
+                <h1>{driving ? "운전에 집중하세요" : "지금, 내 주변 소식"}</h1>
                 <p className="state-subtitle">
                   {driving
-                    ? "중요한 제보는 음성으로 알려드려요."
-                    : "내 주변부터 목적지, 그리고 같은 방향까지."}
+                    ? "가까운 곳의 제보는 음성으로 안내합니다."
+                    : "같은 길을 지나는 운전자들의 제보를 확인하세요."}
                 </p>
               </div>
               <span className="live-badge">
@@ -293,7 +293,6 @@ function RoadtownPrototype({ onReset }: { onReset: () => void }) {
             <div className="community-description">
               <Icon name="info" size={14} />
               {community.description}
-              {driving && <span>주행 중 탭 조작 · 정책 검증 필요</span>}
             </div>
             <div className={`workspace ${blocked ? "has-overlay" : ""}`}>
               <div
@@ -407,7 +406,7 @@ function RoadtownPrototype({ onReset }: { onReset: () => void }) {
               <Icon name="flask" size={21} />
             </span>
             <div>
-              <h2>Demo Controls</h2>
+              <h2>시뮬레이션</h2>
               <p>이 영역은 차량 디스플레이에 포함되지 않습니다.</p>
             </div>
           </div>

@@ -34,7 +34,7 @@ export function VoiceNotificationCard({
         <div className={`notification-audio ${playing ? "is-speaking" : ""}`}>
           <div className="notification-audio-heading">
             <Icon name="speaker" size={18} />
-            <span>음성 안내 · MOCK TTS</span>
+            <span>음성 안내</span>
             {playing && (
               <div className="notification-wave" aria-hidden="true">
                 {[12, 22, 15, 29, 19, 25, 12].map((height, i) => (
