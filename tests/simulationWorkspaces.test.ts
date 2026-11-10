@@ -47,3 +47,20 @@ test("주차 시뮬레이션은 주행 제한 OFF 받아쓰기로 비룡 주차�
   assert.equal(received.distanceMeters, 450);
   assert.ok(received.speech.includes("비룡 주차장 지하 2층"));
 });
+
+test("지역 시뮬레이션은 주행 제한 OFF 받아쓰기로 국밥집 제보를 등록하고 같은 제목으로 수신한다", async () => {
+  const tab = simulationTabs.find((item) => item.id === "local")!;
+  assert.equal(tab.reportMode, "dictation");
+  const scenario = scenarios.find((item) => item.id === tab.reportScenarioId)!;
+  assert.ok(scenario.exampleInput.startsWith("인하대학교에 볼일이 있어서"));
+  const post = await processReport(scenario, scenario.exampleInput, "destination", [], false, {
+    source: "touch",
+  });
+  assert.equal(post.summary, "미추홀 구청 근처 국밥집 추천 제보");
+  assert.equal(post.category, "지역 정보");
+  assert.equal(post.community, "destination");
+  assert.equal(post.evidence, "");
+  const received = tab.notification.createEvent("destination");
+  assert.equal(received.post.summary, post.summary);
+  assert.ok(received.speech.includes("국밥집"));
+});
