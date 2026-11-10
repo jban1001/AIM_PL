@@ -10,12 +10,14 @@ import { DrivingRestrictionPanel } from "./components/DrivingRestrictionPanel";
 import { Composer } from "./components/Composer";
 import { VoiceReport } from "./components/VoiceReport";
 import { VehicleFrame } from "./components/VehicleFrame";
+import { AppOnboarding } from "./components/AppOnboarding";
 import { SimulationWorkspace } from "./components/SimulationWorkspace";
 import { Icon } from "./components/Icon";
 import {
   communities,
   mockConfig,
   type CommunityId,
+  type Category,
   type FeedView,
   type Post,
   type SpeechFault,
@@ -39,6 +41,7 @@ import {
   type DrivingRestrictionState,
 } from "./domain/notifications";
 import { notificationScenarios } from "./scenarios/notifications";
+import { preferredPosts } from "./domain/preferences";
 
 type Feed = { all: Post[]; visible: Post[]; pending: Post[]; scroll: number };
 type CommunityPostData = Record<CommunityId, Feed>;
@@ -53,7 +56,7 @@ const boardSeeds = Object.fromEntries(
     examples: [...boardExamples.slice(index), ...boardExamples.slice(0, index)],
   }]),
 ) as Record<CommunityId, (typeof scenarios)[number]>;
-function initialFeeds() {
+function initialFeeds(preferredCategories: Category[]) {
   return Object.fromEntries(
     ids.map((id) => {
       const scenario = boardSeeds[id];
@@ -62,7 +65,7 @@ function initialFeeds() {
         id,
         {
           all,
-          visible: pagePosts(all, 0),
+          visible: pagePosts(preferredPosts(all, preferredCategories), 0),
           pending:
             id === "nearby"
               ? makeIncoming(scenario, id, 2)
@@ -73,11 +76,14 @@ function initialFeeds() {
     }),
   ) as Record<CommunityId, Feed>;
 }
-function RoadtownPrototype({ onReset }: { onReset: () => void }) {
+function RoadtownPrototype({ onReset, preferredCategories }: {
+  onReset: () => void;
+  preferredCategories: Category[];
+}) {
   const [selected, setSelected] = useState<CommunitySelectionState>("nearby");
   const [scenarioId, setScenarioId] = useState(scenarios[0].id);
   const scenario = scenarios.find((item) => item.id === scenarioId)!;
-  const [feeds, setFeeds] = useState<CommunityPostData>(initialFeeds);
+  const [feeds, setFeeds] = useState<CommunityPostData>(() => initialFeeds(preferredCategories));
   const [vehicleState, setVehicleState] = useState<VehicleState>("driving");
   const driving = vehicleState === "driving";
   const drivingRestrictionState: DrivingRestrictionState = driving
@@ -103,6 +109,8 @@ function RoadtownPrototype({ onReset }: { onReset: () => void }) {
   const online = useRef(!offline);
   online.current = !offline;
   const feed = feeds[selected];
+  const visiblePosts = preferredPosts(feed.visible, preferredCategories);
+  const pendingPosts = preferredPosts(feed.pending, preferredCategories);
   const community = communities.find((item) => item.id === selected)!;
   function updateFeed(id: CommunityId, update: (feed: Feed) => Feed) {
     setFeeds((prev) => ({ ...prev, [id]: update(prev[id]) }));
@@ -132,7 +140,7 @@ function RoadtownPrototype({ onReset }: { onReset: () => void }) {
       updateFeed(post.community, (current) => ({
         ...current,
         all: [post, ...current.all],
-        visible: [post, ...current.visible],
+        visible: [...preferredPosts([post], preferredCategories), ...current.visible],
         scroll: 0,
       }));
       if (mode === "touch") setSelected(post.community);
@@ -151,7 +159,9 @@ function RoadtownPrototype({ onReset }: { onReset: () => void }) {
     enabled: tts,
     paused: !!speechActive,
   });
-  const notification = delivery.history[selected][0];
+  const notification = delivery.history[selected].find((item) =>
+    preferredCategories.includes(item.post.category),
+  );
   const receivedCount = Object.values(delivery.history).reduce(
     (count, items) => count + items.length,
     0,
@@ -165,10 +175,11 @@ function RoadtownPrototype({ onReset }: { onReset: () => void }) {
     updateFeed(selected, (current) => ({
       ...current,
       all: upsertReceivedPost(current.all, event.post),
-      visible: upsertReceivedPost(current.visible, event.post),
+      visible: preferredPosts(upsertReceivedPost(current.visible, event.post), preferredCategories),
       pending: current.pending.filter((post) => post.id !== event.post.id),
     }));
-    delivery.receive(event);
+    if (preferredCategories.includes(event.post.category)) delivery.receive(event);
+    else setToast("선택하지 않은 관심 범주의 제보는 표시하지 않습니다.");
   }
 
   useEffect(() => {
@@ -210,14 +221,14 @@ function RoadtownPrototype({ onReset }: { onReset: () => void }) {
   async function loadMore() {
     if (moreBusy.current || offline || loading || viewState !== "normal" || blocked) return;
     const target = selected;
-    if (!nextPagePosts(feeds[target].all, feeds[target].visible).length) return;
+    if (!nextPagePosts(preferredPosts(feeds[target].all, preferredCategories), feeds[target].visible).length) return;
     moreBusy.current = true;
     setLoadingMore(true);
     await wait(mockConfig.delayMs);
     if (online.current)
       updateFeed(target, (current) => ({
         ...current,
-        visible: [...current.visible, ...nextPagePosts(current.all, current.visible)],
+        visible: [...current.visible, ...nextPagePosts(preferredPosts(current.all, preferredCategories), current.visible)],
       }));
     moreBusy.current = false;
     setLoadingMore(false);
@@ -227,7 +238,7 @@ function RoadtownPrototype({ onReset }: { onReset: () => void }) {
     updateFeed(selected, (current) => ({
       ...current,
       all: [...current.pending, ...current.all],
-      visible: [...current.pending, ...current.visible],
+      visible: [...preferredPosts(current.pending, preferredCategories), ...current.visible],
       pending: [],
       scroll: 0,
     }));
@@ -340,11 +351,11 @@ function RoadtownPrototype({ onReset }: { onReset: () => void }) {
                       </div>
                     )}
                     {!offline && viewState === "normal" && (
-                      <NewPostNotification count={feed.pending.length} onApply={applyNew} />
+                      <NewPostNotification count={pendingPosts.length} onApply={applyNew} />
                     )}
                     <PostList
                       community={selected}
-                      posts={feed.visible}
+                      posts={visiblePosts}
                       loading={loading || viewState === "loading"}
                       empty={viewState === "empty"}
                       offline={offline}
@@ -354,7 +365,7 @@ function RoadtownPrototype({ onReset }: { onReset: () => void }) {
                           updateFeed(selected, (current) => ({ ...current, scroll: value }));
                       }}
                       onMore={loadMore}
-                      hasMore={nextPagePosts(feed.all, feed.visible).length > 0}
+                      hasMore={nextPagePosts(preferredPosts(feed.all, preferredCategories), feed.visible).length > 0}
                       loadingMore={loadingMore}
                       onRetry={() => setOffline(false)}
                       onDelete={removePost}
@@ -606,8 +617,10 @@ function RoadtownPrototype({ onReset }: { onReset: () => void }) {
 
 export default function App() {
   const [demoVersion, setDemoVersion] = useState(0);
+  const [preferredCategories, setPreferredCategories] = useState<Category[] | null>(null);
+  if (!preferredCategories) return <AppOnboarding onComplete={setPreferredCategories} />;
   // Remounting also cancels pending STT/AI/TTS callbacks, preventing late results.
   return (
-    <RoadtownPrototype key={demoVersion} onReset={() => setDemoVersion((value) => value + 1)} />
+    <RoadtownPrototype key={demoVersion} preferredCategories={preferredCategories} onReset={() => setDemoVersion((value) => value + 1)} />
   );
 }
