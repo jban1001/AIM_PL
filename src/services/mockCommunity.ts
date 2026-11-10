@@ -67,6 +67,7 @@ export interface ReportOptions {
   similarPostsAvailable?: boolean;
   source?: InputMode;
   onRequest?: (input: ReportAIInput) => void;
+  aiDelayMs?: number;
 }
 export async function processReport(
   scenario: Scenario,
@@ -89,7 +90,7 @@ export async function processReport(
         : similarPosts.filter((post) => post.community === community).map((post) => ({ ...post })),
   };
   options.onRequest?.(input);
-  await wait(mockConfig.aiDelayMs);
+  await wait(options.aiDelayMs ?? mockConfig.aiDelayMs);
   if (fail) throw new Error("제보를 정리하지 못했어요");
   const result = scenario.process(input.body, input);
   return {

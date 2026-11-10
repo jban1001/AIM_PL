@@ -5,7 +5,12 @@ export class MockTTSError extends Error {
     this.code = code;
   }
 }
-function browserSpeech(text: string, signal: AbortSignal, onStart: () => void): Promise<void> {
+function browserSpeech(
+  text: string,
+  signal: AbortSignal,
+  onStart: () => void,
+  rate = 0.95,
+): Promise<void> {
   return new Promise((resolve, reject) => {
     if (signal.aborted) {
       reject(new DOMException("Cancelled", "AbortError"));
@@ -22,7 +27,7 @@ function browserSpeech(text: string, signal: AbortSignal, onStart: () => void): 
     const synth = window.speechSynthesis;
     const utterance = new window.SpeechSynthesisUtterance(text);
     utterance.lang = "ko-KR";
-    utterance.rate = 0.95;
+    utterance.rate = rate;
     let settled = false;
     let watchdog: ReturnType<typeof setTimeout>;
     function finish(error?: Error) {
@@ -95,12 +100,13 @@ export async function playMockTTS(
   options: {
     signal: AbortSignal;
     manual: boolean;
+    rate?: number;
     onStart: () => void;
     onSilentFallback: () => void;
   },
 ): Promise<"spoken" | "simulated"> {
   try {
-    await browserSpeech(text, options.signal, options.onStart);
+    await browserSpeech(text, options.signal, options.onStart, options.rate);
     return "spoken";
   } catch (error) {
     if (options.signal.aborted || !options.manual) throw error;

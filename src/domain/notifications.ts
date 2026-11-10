@@ -9,6 +9,8 @@ export interface MockNotificationData {
   source: string;
   receivedAt: number;
   simulated: true;
+  // 브라우저 TTS 속도. 생략 시 0.95
+  speechRate?: number;
 }
 export type NotificationHistory = Record<CommunityId, MockNotificationData[]>;
 export type TTSStatus =

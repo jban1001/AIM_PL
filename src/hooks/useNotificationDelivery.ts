@@ -42,6 +42,7 @@ export function useNotificationDelivery({
     void playMockTTS(item.notification.speech, {
       signal: controller.signal,
       manual: item.manual,
+      rate: item.notification.speechRate,
       onStart: () => {
         if (alive.current && epoch === generation.current)
           update(id, { status: "playing", detail: "음성 안내 중 · Mock TTS" });

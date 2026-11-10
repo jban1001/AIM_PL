@@ -175,3 +175,10 @@
   .vehicle-frame .app-footer > span:last-child { display: none; }
   .notification-demo-actions { display: grid; grid-template-columns: 1fr 1fr; width: 100%; }
 }
+
+/* 받아쓰기 자동 시연: 곧 눌릴 버튼을 강조 */
+.is-demo-pressed {
+  transform: scale(0.96);
+  box-shadow: 0 0 0 4px rgba(111, 71, 196, 0.35);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}

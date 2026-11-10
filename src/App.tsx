@@ -40,7 +40,11 @@ import {
   type CommunitySelectionState,
   type DrivingRestrictionState,
 } from "./domain/notifications";
-import { notificationScenarios } from "./scenarios/notifications";
+import {
+  DICTATION_REQUIRES_STOPPED,
+  notificationScenarios,
+  simulationTabs,
+} from "./scenarios/notifications";
 import { preferredPosts } from "./domain/preferences";
 
 type Feed = { all: Post[]; visible: Post[]; pending: Post[]; scroll: number };
@@ -468,7 +472,16 @@ function RoadtownPrototype({ onReset, preferredCategories }: {
           canReport={!busy && !offline}
           canReceive={!offline && !session}
           onSelect={changeScenario}
-          onReport={() => flow.begin("voice", selected, scenario)}
+          onReport={() => {
+            const tab = simulationTabs.find((item) => item.reportScenarioId === scenarioId);
+            if (tab?.reportMode !== "dictation") {
+              flow.begin("voice", selected, scenario);
+              return;
+            }
+            if (driving) setToast(DICTATION_REQUIRES_STOPPED);
+            else if (session) setToast("작성 중인 제보를 먼저 등록하거나 취소해 주세요.");
+            else flow.beginDictationDemo(selected, scenario, tab.speed);
+          }}
           onReceive={receiveScenario}
         />
         {demoOpen && (

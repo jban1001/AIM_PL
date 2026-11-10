@@ -41,11 +41,19 @@ export function SimulationWorkspace({ scenarioId, disabled, canReport, canReceiv
         <div className="simulation-steps">
           <div className="simulation-step">
             <span className="simulation-step-label">01 · 제보자</span>
-            <p>음성 인식부터 처리, 제보 등록까지</p>
+            <p>
+              {active.reportMode === "dictation"
+                ? "글 작성 · 말로 입력부터 제보 등록까지"
+                : "음성 인식부터 처리, 제보 등록까지"}
+            </p>
             <button type="button" className="speech-trigger" disabled={!canReport} onClick={onReport}>
               <Icon name="mic" size={19} />‘제보할게’ 발화 시연<Icon name="arrow" size={16} />
             </button>
-            <small>주행 제한 ON/OFF 모두 음성 제보를 실행할 수 있습니다.</small>
+            <small>
+              {active.reportMode === "dictation"
+                ? "주행 제한 OFF 상태에서 실행할 수 있습니다."
+                : "주행 제한 ON/OFF 모두 음성 제보를 실행할 수 있습니다."}
+            </small>
           </div>
           <div className="simulation-step">
             <span className="simulation-step-label">02 · 수신자</span>

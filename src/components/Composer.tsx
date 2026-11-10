@@ -55,7 +55,7 @@ export function Composer({
           placeholder="도로 상황을 직접 적거나 마이크로 말해 주세요."
         />
         <button
-          className="microphone-button"
+          className={`microphone-button ${session.demoPress === "mic" ? "is-demo-pressed" : ""}`}
           aria-label="마이크로 본문 입력"
           disabled={processing}
           onClick={onListen}
@@ -105,7 +105,7 @@ export function Composer({
       <div className="composer-actions">
         <span>등록 대상은 작성 도중 탭을 바꿔도 유지됩니다.</span>
         <button
-          className="primary-button"
+          className={`primary-button ${session.demoPress === "submit" ? "is-demo-pressed" : ""}`}
           disabled={!session.body.trim() || processing}
           onClick={onSubmit}
         >
