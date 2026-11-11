@@ -22,7 +22,7 @@ export const DICTATION_REQUIRES_STOPPED = "이 시나리오는 주행 제한 OFF
 export const simulationTabs: SimulationTab[] = [
   { id: "parking", name: "주차", reportScenarioId: "parking", notification: ParkingScenario, reportMode: "dictation", speed: 0.5 },
   { id: "traffic", name: "교통", reportScenarioId: "congestion", notification: TrafficScenario, reportMode: "voice", speed: 0.5 },
-  { id: "local", name: "지역", reportScenarioId: "local", notification: LocalScenario, reportMode: "voice", confirmRegistration: true, speed: 0.5 },
+  { id: "local", name: "지역", reportScenarioId: "local", notification: LocalScenario, reportMode: "dictation", speed: 0.5 },
   { id: "road-hazard", name: "도로 위험", reportScenarioId: "black-ice", notification: BlackIceScenario, reportMode: "voice", confirmRegistration: true, speed: 0.5 },
 ];
 

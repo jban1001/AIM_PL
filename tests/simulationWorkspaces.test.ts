@@ -5,8 +5,8 @@ import { simulationTabs } from "../src/scenarios/notifications/index.ts";
 import { processReport } from "../src/services/mockCommunity.ts";
 import { validateReportBody } from "../src/services/reportInput.ts";
 
-test("주행 제한 OFF 전용 작성 모드는 주차 시뮬레이션에만 적용한다", () => {
-  assert.deepEqual(simulationTabs.filter((tab) => tab.reportMode === "dictation").map((tab) => tab.id), ["parking"]);
+test("주행 제한 OFF 전용 작성 모드는 주차와 지역 시뮬레이션에 적용한다", () => {
+  assert.deepEqual(simulationTabs.filter((tab) => tab.reportMode === "dictation").map((tab) => tab.id), ["parking", "local"]);
 });
 
 test("도로 위험 시연은 주행 상태와 무관한 음성 자동 등록으로 고정 발화·제목·근거를 전달한다", async () => {
@@ -77,10 +77,10 @@ test("주차 시뮬레이션은 주행 제한 OFF 받아쓰기로 비룡 주차�
   assert.ok(received.speech.includes("비룡 주차장 지하 2층"));
 });
 
-test("지역 시뮬레이션은 주행 상태와 무관한 음성 제보로 같은 제목을 등록·수신한다", async () => {
+test("지역 시뮬레이션은 작성 화면의 받아쓰기로 같은 제목을 등록·수신한다", async () => {
   const tab = simulationTabs.find((item) => item.id === "local")!;
-  assert.equal(tab.reportMode, "voice");
-  assert.equal(tab.confirmRegistration, true);
+  assert.equal(tab.reportMode, "dictation");
+  assert.equal(tab.speed, 0.5);
   const scenario = scenarios.find((item) => item.id === tab.reportScenarioId)!;
   assert.ok(scenario.exampleInput.startsWith("인하대학교에 볼일이 있어서"));
   const post = await processReport(scenario, scenario.exampleInput, "destination", [], false, {
