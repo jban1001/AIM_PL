@@ -55,8 +55,8 @@ test("Mock AI는 원문과 모의 context를 처리해 선택한 커뮤니티에
   const post = await processReport(blackIce, blackIce.exampleInput, "destination", [], false);
   assert.equal(post.community, "destination");
   assert.equal(post.category, "도로 위험");
-  assert.match(post.summary, /블랙아이스 의심/);
-  assert.match(post.evidence, /시뮬레이션/);
+  assert.equal(post.summary, "인하대역 3번 출구 방면 1차선 도로 블랙아이스 제보");
+  assert.equal(post.evidence, "차량 데이터 확인 결과, 인하대역 3번 출구 인근을 통과한 차량에서 결빙 위험 신호가 확인되어 해당 구간의 블랙아이스가 의심됩니다.");
   assert.equal(post.simulated, true);
 });
 test("AI 처리 실패 시 대체 게시글을 반환하지 않고 재시도할 수 있다", async () => {

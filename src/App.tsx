@@ -391,6 +391,7 @@ function RoadtownPrototype({ onReset, preferredCategories }: {
                     community={communityName(voiceSession.community)}
                     onRetry={flow.retry}
                     onCancel={flow.cancel}
+                    onSubmit={flow.submit}
                   />
                 </div>
               ) : (
@@ -475,7 +476,8 @@ function RoadtownPrototype({ onReset, preferredCategories }: {
           onReport={() => {
             const tab = simulationTabs.find((item) => item.reportScenarioId === scenarioId);
             if (tab?.reportMode !== "dictation") {
-              flow.begin("voice", selected, scenario, tab?.speed);
+              if (tab?.confirmRegistration) flow.beginVoiceDemo(selected, scenario, tab.speed);
+              else flow.begin("voice", selected, scenario, tab?.speed);
               return;
             }
             if (driving) setToast(DICTATION_REQUIRES_STOPPED);

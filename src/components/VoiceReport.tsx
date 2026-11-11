@@ -6,15 +6,18 @@ export function VoiceReport({
   community,
   onRetry,
   onCancel,
+  onSubmit,
 }: {
   session: ReportSession;
   community: string;
   onRetry: () => void;
   onCancel: () => void;
+  onSubmit?: () => void;
 }) {
   const failed = ["stt-error", "insufficient", "ai-error"].includes(session.phase);
   const processing = session.phase === "processing";
   const success = session.phase === "success";
+  const awaitingRegistration = session.phase === "editing" && session.demo === "dictated";
   return (
     <section className={`voice-report ${failed ? "voice-failed" : ""}`} aria-label="음성 제보">
       <div className="voice-topline">
@@ -35,7 +38,7 @@ export function VoiceReport({
             ? "제보를 정리하는 중이에요"
             : failed
               ? session.error
-              : "듣고 있어요"}
+              : awaitingRegistration ? "제보 내용을 확인해 주세요" : "듣고 있어요"}
       </h2>
       <p className="voice-subtitle">
         {success
@@ -44,7 +47,7 @@ export function VoiceReport({
             ? "원본 발화·모의 차량 데이터·유사 제보를 한 번에 처리해요."
             : failed
               ? "유효한 제보가 확보되기 전에는 게시하지 않습니다."
-              : "지금 보이는 도로 상황을 편하게 말해 주세요."}
+              : awaitingRegistration ? "잠시 후 등록 버튼이 자동으로 실행됩니다." : "지금 보이는 도로 상황을 편하게 말해 주세요."}
       </p>
       {session.phase === "listening" && (
         <div className="voice-wave" aria-hidden="true">
@@ -76,6 +79,14 @@ export function VoiceReport({
             <span className="button-spinner" />
             Gemini Mock · 1회
           </span>
+        </div>
+      )}
+      {awaitingRegistration && (
+        <div className="voice-actions">
+          <button className="secondary-button" onClick={onCancel}>취소</button>
+          <button className={`primary-button ${session.demoPress === "submit" ? "is-demo-pressed" : ""}`} onClick={onSubmit}>
+            <Icon name="plus" size={18} />등록
+          </button>
         </div>
       )}
       {failed && (
