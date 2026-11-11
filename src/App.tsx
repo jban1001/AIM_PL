@@ -475,7 +475,7 @@ function RoadtownPrototype({ onReset, preferredCategories }: {
           onReport={() => {
             const tab = simulationTabs.find((item) => item.reportScenarioId === scenarioId);
             if (tab?.reportMode !== "dictation") {
-              flow.begin("voice", selected, scenario);
+              flow.begin("voice", selected, scenario, tab?.speed);
               return;
             }
             if (driving) setToast(DICTATION_REQUIRES_STOPPED);

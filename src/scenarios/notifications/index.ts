@@ -20,9 +20,9 @@ export interface SimulationTab {
 export const DICTATION_REQUIRES_STOPPED = "이 시나리오는 주행 제한 OFF 상태에서 테스트할 수 있습니다.";
 export const simulationTabs: SimulationTab[] = [
   { id: "parking", name: "주차", reportScenarioId: "parking", notification: ParkingScenario, reportMode: "dictation", speed: 0.5 },
-  { id: "traffic", name: "교통", reportScenarioId: "congestion", notification: TrafficScenario, reportMode: "voice" },
-  { id: "local", name: "지역", reportScenarioId: "local", notification: LocalScenario, reportMode: "dictation" },
-  { id: "road-hazard", name: "도로 위험", reportScenarioId: "black-ice", notification: BlackIceScenario, reportMode: "voice" },
+  { id: "traffic", name: "교통", reportScenarioId: "congestion", notification: TrafficScenario, reportMode: "voice", speed: 0.5 },
+  { id: "local", name: "지역", reportScenarioId: "local", notification: LocalScenario, reportMode: "dictation", speed: 0.5 },
+  { id: "road-hazard", name: "도로 위험", reportScenarioId: "black-ice", notification: BlackIceScenario, reportMode: "voice", speed: 0.5 },
 ];
 
 // Extend event rules here; the shared delivery UI never needs scenario branches.

@@ -69,7 +69,7 @@ export function useReportFlow(props: FlowProps) {
     suspendedTouch.current = null;
     replace(draft);
   }
-  function begin(mode: InputMode, community: CommunityId, scenario: Scenario) {
+  function begin(mode: InputMode, community: CommunityId, scenario: Scenario, speed = 1) {
     if (
       busy.current ||
       current.current?.phase === "listening" ||
@@ -83,6 +83,7 @@ export function useReportFlow(props: FlowProps) {
       mode,
       community,
       scenario,
+      speed,
       body: "",
       phase: mode === "voice" ? "listening" : "editing",
       error: "",

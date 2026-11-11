@@ -11,7 +11,7 @@ export const congestion: Scenario = {
     averageSpeed: 8,
     stops: 6,
     observation: "모의 저속·반복 정지",
-    location: "강변북로 성수 방면",
+    location: "인천대교 진입 구간",
   },
   examples: [
     {
@@ -30,7 +30,7 @@ export const congestion: Scenario = {
       ? {
           summary:
             typeof context.vehicleData.location === "string" && context.vehicleData.location.trim()
-              ? `${context.vehicleData.location.trim()} 정체 관련 제보`
+              ? `${context.vehicleData.location.trim()} 교통 정체 제보`
               : "정체 관련 제보",
           category: "교통",
           evidence:
