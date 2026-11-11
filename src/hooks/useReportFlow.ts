@@ -96,6 +96,12 @@ export function useReportFlow(props: FlowProps) {
     begin("touch", community, scenario);
     patch({ demo: "open", speed });
   }
+  // Voice demonstrations work in both driving states and retain the timed registration cue.
+  function beginVoiceDemo(community: CommunityId, scenario: Scenario, speed = 1) {
+    if (busy.current || current.current) return;
+    begin("voice", community, scenario);
+    patch({ demo: "dictating", speed });
+  }
   async function submit(text?: string) {
     const snapshot = current.current;
     if (!snapshot || busy.current) return;
@@ -183,7 +189,7 @@ export function useReportFlow(props: FlowProps) {
               return;
             if (!validateReportBody(text))
               patch({ phase: "insufficient", error: "어떤 상황인지 한 문장 더 말해 주세요" });
-            else if (snapshot.mode === "voice") void submit(text);
+            else if (snapshot.mode === "voice" && snapshot.demo !== "dictating") void submit(text);
             else
               patch({
                 phase: "editing",
@@ -235,6 +241,7 @@ export function useReportFlow(props: FlowProps) {
     session,
     begin,
     beginDictationDemo,
+    beginVoiceDemo,
     listen,
     submit: () => void submit(),
     retry,
