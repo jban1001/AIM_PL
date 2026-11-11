@@ -93,7 +93,6 @@ function RoadtownPrototype({ onReset, preferredCategories }: {
   const drivingRestrictionState: DrivingRestrictionState = driving
     ? "DRIVING_RESTRICTED"
     : "UNRESTRICTED";
-  const [tts, setTts] = useState(true);
   const [offline, setOffline] = useState(false);
   const [viewState, setViewState] = useState<FeedView>(
     scenario.simulation?.initialView ?? "normal",
@@ -160,7 +159,7 @@ function RoadtownPrototype({ onReset, preferredCategories }: {
   const speechActive = session?.phase === "listening" || session?.phase === "processing";
   const delivery = useNotificationDelivery({
     restricted: driving,
-    enabled: tts,
+    enabled: true,
     paused: !!speechActive,
   });
   const notification = delivery.history[selected].find((item) =>
@@ -298,19 +297,6 @@ function RoadtownPrototype({ onReset, preferredCategories }: {
                     : "같은 길을 지나는 운전자들의 제보를 확인하세요."}
                 </p>
               </div>
-              <div className="voice-guidance-control">
-                <span>음성 안내 <strong>{tts ? "ON" : "OFF"}</strong></span>
-                <button
-                  type="button"
-                  role="switch"
-                  aria-label="음성 안내"
-                  aria-checked={tts}
-                  className={`toggle ${tts ? "on" : ""}`}
-                  onClick={() => setTts((value) => !value)}
-                >
-                  <span />
-                </button>
-              </div>
             </div>
             <CommunityTabs selected={selected} onChange={setSelected} />
             <div className="community-description">
@@ -400,7 +386,7 @@ function RoadtownPrototype({ onReset, preferredCategories }: {
                     communityName={community.name}
                     notification={notification}
                     playback={delivery.stateFor(notification?.post.id ?? "")}
-                    enabled={tts}
+                    enabled={true}
                     onPlay={() => {
                       if (notification) delivery.playManual(notification);
                     }}
