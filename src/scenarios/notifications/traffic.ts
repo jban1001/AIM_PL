@@ -1,4 +1,5 @@
 import type { ScenarioEventHandler } from "../../domain/notifications.ts";
+import { TRAFFIC_EVIDENCE, TRAFFIC_SUMMARY } from "../congestion.ts";
 
 export const TrafficScenario: ScenarioEventHandler = {
   id: "traffic-approach",
@@ -8,8 +9,8 @@ export const TrafficScenario: ScenarioEventHandler = {
       id: "mock-seongsu-traffic",
       community,
       category: "교통",
-      summary: "인천대교 진입 구간 교통 정체 제보",
-      evidence: "차량 데이터로 관측됨",
+      summary: TRAFFIC_SUMMARY,
+      evidence: TRAFFIC_EVIDENCE,
       createdAt: now - 3 * 60_000,
       authorId: "mock-traffic-driver",
       simulated: true,

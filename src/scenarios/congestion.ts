@@ -2,7 +2,11 @@ import type { Scenario } from "../domain/types.ts";
 import { conservativeResult, normalizeReportBody } from "../services/reportInput.ts";
 
 const exampleInput =
-  "지금 차가 너무 막혀요. 조금 움직이다가 다시 멈추는 상황이 반복되고 있어요.";
+  "인천대교 진입 지점에서 차가 너무 막혀요. 조금 움직이다가 다시 멈추는 상황이 반복되고 있어요.";
+// 제보 등록 글과 수신 카드가 같은 제목·근거를 사용합니다.
+export const TRAFFIC_SUMMARY = "인천대교 진입 구간 교통 정체 제보";
+export const TRAFFIC_EVIDENCE =
+  "차량 데이터 확인 결과, 최근 5분간 평균 주행 속도가 시속 8km로 낮고 정지와 출발이 6회 반복되어 해당 구간의 정체가 확인되었습니다.";
 export const congestion: Scenario = {
   id: "congestion",
   name: "도로 정체 제보",
@@ -28,15 +32,10 @@ export const congestion: Scenario = {
   process: (body, context) =>
     normalizeReportBody(body) === normalizeReportBody(exampleInput)
       ? {
-          summary:
-            typeof context.vehicleData.location === "string" && context.vehicleData.location.trim()
-              ? `${context.vehicleData.location.trim()} 교통 정체 제보`
-              : "정체 관련 제보",
+          summary: TRAFFIC_SUMMARY,
           category: "교통",
-          evidence:
-            context.vehicleData.averageSpeed !== undefined
-              ? "시뮬레이션: 제보 차량의 저속 주행과 반복적인 정지가 설정되었습니다. 실제 차량 관측이 아닙니다."
-              : "",
+          // 차량 데이터 조회 실패 시뮬레이션에서는 근거를 비웁니다.
+          evidence: context.vehicleData.averageSpeed !== undefined ? TRAFFIC_EVIDENCE : "",
         }
       : conservativeResult(body),
 };

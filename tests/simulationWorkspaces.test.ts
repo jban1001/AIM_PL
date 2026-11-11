@@ -94,3 +94,22 @@ test("지역 시뮬레이션은 작성 화면의 받아쓰기로 같은 제목�
   assert.equal(received.post.summary, post.summary);
   assert.ok(received.speech.includes("국밥집"));
 });
+
+test("교통 시뮬레이션은 인천대교 고정 발화로 제보하고 등록 글과 수신 카드가 같은 제목·근거를 쓴다", async () => {
+  const tab = simulationTabs.find((item) => item.id === "traffic")!;
+  const scenario = scenarios.find((item) => item.id === tab.reportScenarioId)!;
+  assert.equal(
+    scenario.exampleInput,
+    "인천대교 진입 지점에서 차가 너무 막혀요. 조금 움직이다가 다시 멈추는 상황이 반복되고 있어요.",
+  );
+  const post = await processReport(scenario, scenario.exampleInput, "nearby", [], false, { source: "voice" });
+  assert.equal(post.summary, "인천대교 진입 구간 교통 정체 제보");
+  assert.ok(post.evidence.startsWith("차량 데이터 확인 결과, 최근 5분간 평균 주행 속도가 시속 8km"));
+  const received = tab.notification.createEvent("nearby");
+  assert.equal(received.post.summary, post.summary);
+  assert.equal(received.post.evidence, post.evidence);
+  const noVehicle = await processReport(scenario, scenario.exampleInput, "nearby", [], false, {
+    vehicleDataAvailable: false,
+  });
+  assert.equal(noVehicle.evidence, "");
+});
