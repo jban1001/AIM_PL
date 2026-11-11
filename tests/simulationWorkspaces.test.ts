@@ -25,7 +25,8 @@ test("도로 위험 시연은 주행 상태와 무관한 음성 자동 등록으
   const event = tab.notification.createEvent("nearby");
   assert.equal(event.post.summary, post.summary);
   assert.equal(event.post.evidence, post.evidence);
-  assert.equal(event.speech, post.evidence);
+  assert.equal(event.speech, "전방 약 100미터, 인하대역 3번 출구 방면에 블랙아이스 의심 제보가 있습니다. 차량들이 우회하고 있으니 주의해 주세요.");
+  assert.notEqual(event.speech, post.evidence);
   const noVehicle = await processReport(scenario, scenario.exampleInput, "nearby", [], false, { vehicleDataAvailable: false, aiDelayMs: 0 });
   assert.equal(noVehicle.summary, post.summary);
   assert.equal(noVehicle.evidence, "");

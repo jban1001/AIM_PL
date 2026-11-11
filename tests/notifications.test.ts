@@ -19,14 +19,15 @@ test("탭 이름과 순서는 내 차·목적지·방향 중심이며 기존 com
     ["nearby", "destination", "direction"],
   );
 });
-test("블랙아이스 이벤트는 고정 ID, 450m, 3분 전 제보와 정확한 음성 문장을 만든다", () => {
+test("블랙아이스 이벤트는 고정 ID, 100m, 3분 전 제보와 정확한 음성 문장을 만든다", () => {
   const event = BlackIceScenario.createEvent("nearby", 1_000_000);
-  assert.equal(event.distanceMeters, 450);
+  assert.equal(event.distanceMeters, 100);
   assert.equal(event.post.createdAt, 820_000);
   assert.equal(event.post.summary, "인하대역 3번 출구 방면 1차선 도로 블랙아이스 제보");
   assert.equal(event.post.category, "도로 위험");
   assert.equal(event.post.evidence, "차량 데이터 확인 결과, 인하대역 3번 출구 인근을 통과한 차량에서 결빙 위험 신호가 확인되어 해당 구간의 블랙아이스가 의심됩니다.");
-  assert.equal(event.speech, event.post.evidence);
+  assert.equal(event.speech, "전방 약 100미터, 인하대역 3번 출구 방면에 블랙아이스 의심 제보가 있습니다. 차량들이 우회하고 있으니 주의해 주세요.");
+  assert.notEqual(event.speech, event.post.evidence);
   assert.equal(event.simulated, true);
   assert.equal(event.post.simulated, true);
   assert.equal(event.post.id, BlackIceScenario.createEvent("destination").post.id);
